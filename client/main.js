@@ -4,26 +4,84 @@ const complimentBtn = document.getElementById("complimentButton")
 const fortuneBtn = document.querySelector("#fortuneButton")
 const pokeBtn = document.querySelector("#randomTeamGen")
 const myDiv = document.querySelector("#my-div")
+const myDiv2 = document.querySelector("#my-div2")
 const form = document.querySelector('form')
 const pokeName = document.querySelector('#name-input')
 const pokeType = document.querySelector('#pokeType-input')
 const baseURL = "http://localhost:4000/api/poke"
+
+
+
+function dispPoke(poke){
+    myDiv.innerHTML = ''
+    // console.log(typeof poke.data)
+    poke.forEach(poke =>{
+        const pokeName = document.createElement('h2')
+        pokeName.innerHTML = `
+        <p> ${poke.name} - Type: ${poke.pokeType}</p>
+        <button onclick="deletePoke(${poke.id})">delete</button>
+        <select 
+        name="type"
+        id="change-type-drop-down-${poke.id}"
+        onchange="changePoke(${poke.id})"
+        placeholder="change pokemon type">
+        <option value="Choose new type">Choose new type</option>
+        <option value="Fire">Fire</option>
+        <option value="Water">Water</option>
+        <option value="Electric">Electric</option>
+        <option value="Grass">Grass</option>
+        <option value="Ground">Ground</option>
+        <option value="Rock">Rock</option>
+        <option value="Dark">Dark</option>
+        <option value="Fighting">Fighting</option>
+        <option value="Poison">Poison</option>
+        <option value="Bug">Bug</option>
+        <option value="Steel">Steel</option>
+        <option value="Dragon">Dragon</option>
+        <option value="Fairy">Fairy</option>
+        <option value="Ice">Ice</option>
+        <option value="Ghost">Ghost</option>
+        <option value="Normal">Normal</option> 
+        <option value="Baby">Baby</option>
+        </select>`
+        myDiv.appendChild(pokeName)
+    })
+    
+    
+}
+
+function dispTeam(poke){
+      
+    const pokeName = document.createElement('h2')
+        pokeName.textContent = poke
+        myDiv2.appendChild(pokeName)
+        
+}
+
 function pokeCallBack(pokemon) {
-    myDiv.textContent = ''
+    
     let pokemonArr  = pokemon.data.results
    for(i = 0; i < 6; i++){
     let randomIndex = Math.floor(Math.random() * pokemonArr.length);
         let randomPokemon = pokemonArr[randomIndex];
-        dispPoke(randomPokemon.name)
+        dispTeam(randomPokemon.name)
+        console.log(randomPokemon)
     }
    
 }
 
-const createNewPoke = () => 
-    axios.post(baseURL , {name: pokeName.value, pokeType: pokeType.value}).then(pokeDestruct)
-    
-const pokeDestruct = ({data: poke}) => dispPoke2(poke)
+const pokeDestruct = ({data: poke}) => dispPoke(poke)
 
+
+
+const createNewPoke = () => 
+axios.post(baseURL , {name: pokeName.value, pokeType: pokeType.value}).then(pokeDestruct)
+    
+const changePoke = (id) => {
+    const changeSelector = document.getElementById(`change-type-drop-down-${id}`)
+    console.log(changeSelector.value)
+    axios.put(`${baseURL}/${id}`,{pokeType: changeSelector.value}).then(pokeDestruct)
+}
 
 
 const getCompliment = () => {
@@ -46,29 +104,18 @@ const getFortune = () =>{
 }
 
 const getTeam = () => {
-   axios.get('https://pokeapi.co/api/v2/pokemon/').then(pokeCallBack)
+    myDiv2.textContent = '' 
+    axios.get('https://pokeapi.co/api/v2/pokemon/').then(pokeCallBack)
     
-}
-const deletePoke = () => {
-    axios.delete(`${baseURL}/${id}`).then(dispPoke2)
 }
 
-function dispPoke(poke){
+const deletePoke = (id) => {
     
-    const pokeName = document.createElement('h2')
-        pokeName.textContent = poke
-        myDiv.appendChild(pokeName)
-        console.log(poke)
+    axios.delete(`${baseURL}/${id}`).then(pokeDestruct)
+    
 }
-function dispPoke2(poke){
-    for(i = 0; i < poke.length; i++){
-        const pokeName = document.createElement('h2')
-        pokeName.textContent = poke[i].name + ': ' + poke[i].pokeType + ' type'
-        // pokeName.innerHTML = `<p ${poke[i].name}: ${poke[i].pokeType}</p><button onclick="deletePoke(${poke[i].id})">delete</button>`
-        //This is for delete function, didnt have enough time to make it work with everything else.
-        myDiv.appendChild(pokeName)
-    }
-}
+
+
 
 function formSubmit(e){
 e.preventDefault()
@@ -76,6 +123,7 @@ e.preventDefault()
 
 createNewPoke()
 }
+
 
 
 

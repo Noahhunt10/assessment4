@@ -1,4 +1,4 @@
-const database = []
+let database = []
 let newId = 1
 module.exports = {
 
@@ -20,15 +20,20 @@ module.exports = {
         res.status(200).send(randomFortune);
     },
     newPoke: (req, res) => {
-        console.log(req.body)
+        
         let { name, pokeType } = req.body
         let newMon = {
             id: newId,
             name,
             pokeType
         }
-        console.log(newMon)
-        database.push(newMon)
+        const newArr = database.filter(ele => !(
+            name === ele.name && ele.pokeType === pokeType
+            ))
+        newArr.push(newMon)
+
+        database = [...newArr]
+        
         res.status(200).send(database)
 
         newId++
@@ -38,8 +43,20 @@ module.exports = {
         let index = database.findIndex(pokemon => pokemon.id === +id)
         database.splice(index,1)
         res.status(200).send(database)
+    },
+    changeType: (req, res) => {
+        const { pokeType } = req.body
+        const { id } = req.params
+        
+        let index = database.findIndex(pokemon => pokemon.id === +id)
+
+       database[index].pokeType = pokeType
+       console.log(database[index])
+            
+        res.status(200).send(database)
     }
    
+
 }
 
     
