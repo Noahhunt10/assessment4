@@ -42,7 +42,6 @@ function dispPoke(poke){
         <option value="Ice">Ice</option>
         <option value="Ghost">Ghost</option>
         <option value="Normal">Normal</option> 
-        <option value="Baby">Baby</option>
         </select>`
         myDiv.appendChild(pokeName)
     })
